@@ -1,0 +1,5 @@
+- name: Configure k8s cluster
+  hosts: localhost
+  roles:
+    - role: postgresql
+    - role: coder

@@ -1,0 +1,36 @@
+---
+- name: Create Coder namespace
+  kubernetes.core.k8s:
+    api_version: v1
+    kind: Namespace
+    name: coder
+    state: present
+
+- name: Create Coder secret
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: coder-secrets
+        namespace: coder
+      data:
+        DB_URL: "{{ coder.db.url | b64encode }}"
+        OIDC_CLIENT_ID: "{{ coder.auth.clientId | b64encode }}"
+        OIDC_CLIENT_SECRET: "{{ coder.auth.clientSecret | b64encode }}"
+
+- name: Add Coder chart repo
+  kubernetes.core.helm_repository:
+    name: coderv2
+    repo_url: https://helm.coder.com/v2
+
+- name: Deploy Coder chart
+  kubernetes.core.helm:
+    name: coder
+    chart_ref: coderv2/coder
+    release_namespace: coder
+    chart_version: 0.24.1
+    update_repo_cache: true
+    wait: true
+    release_values: "{{ lookup('template', 'values.coder.yml.j2') | from_yaml }}"

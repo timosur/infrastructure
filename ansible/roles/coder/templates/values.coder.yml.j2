@@ -1,0 +1,32 @@
+---
+coder:
+  ingress:
+    enable: true
+    host: ide.k8s.timosur.com
+    wildcardHost: "*.ide.k8s.timosur.com"
+  env:
+    - name: CODER_WILDCARD_ACCESS_URL
+      value: '*.ide.k8s.timosur.com'
+    - name: CODER_ACCESS_URL
+      value: "https://ide.k8s.timosur.com"
+    - name: CODER_PG_CONNECTION_URL
+      valueFrom:
+        secretKeyRef:
+          name: coder-secrets
+          key: DB_URL
+    - name: CODER_DISABLE_PASSWORD_AUTH
+      value: "true"
+    - name: CODER_OAUTH2_GITHUB_ALLOW_SIGNUPS
+      value: "true"
+    - name: CODER_OAUTH2_GITHUB_ALLOWED_ORGS
+      value: "timosur"
+    - name: CODER_OAUTH2_GITHUB_CLIENT_ID
+      valueFrom:
+        secretKeyRef:
+          name: coder-secrets
+          key: OIDC_CLIENT_ID
+    - name: CODER_OAUTH2_GITHUB_CLIENT_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: coder-secrets
+          key: OIDC_CLIENT_SECRET
