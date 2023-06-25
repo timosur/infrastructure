@@ -25,7 +25,13 @@ jobs:
         working-directory: ./k8s
 
       - name: Terraform Plan
-        run: terraform plan
+        run: |
+          export TF_VAR_hcloud_token=${{ secrets.HCLOUD_TOKEN }}
+          echo ${{ secrets.SSH_PRIVATE_KEY }} > ssh_private_key
+          echo ${{ secrets.SSH_PUBLIC_KEY }} > ssh_public_key
+          export TF_VAR_ssh_public_key=ssh_public_key
+          export TF_VAR_ssh_private_key=ssh_private_key
+          terraform plan
         working-directory: ./k8s
 
       # Ask for confirmation before applying
