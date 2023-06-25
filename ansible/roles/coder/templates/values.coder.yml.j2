@@ -1,14 +1,10 @@
 ---
 coder:
-  ingress:
-    enable: true
-    host: ide.k8s.timosur.com
-    wildcardHost: "*.ide.k8s.timosur.com"
   env:
     - name: CODER_WILDCARD_ACCESS_URL
-      value: '*.ide.k8s.timosur.com'
+      value: '*.timosur.com'
     - name: CODER_ACCESS_URL
-      value: "https://ide.k8s.timosur.com"
+      value: "https://ide.timosur.com"
     - name: CODER_PG_CONNECTION_URL
       valueFrom:
         secretKeyRef:
@@ -19,7 +15,7 @@ coder:
     - name: CODER_OAUTH2_GITHUB_ALLOW_SIGNUPS
       value: "true"
     - name: CODER_OAUTH2_GITHUB_ALLOWED_ORGS
-      value: "timosur"
+      value: "surmann-dev"
     - name: CODER_OAUTH2_GITHUB_CLIENT_ID
       valueFrom:
         secretKeyRef:
@@ -30,3 +26,12 @@ coder:
         secretKeyRef:
           name: coder-secrets
           key: OIDC_CLIENT_SECRET
+  service:
+    type: ClusterIP
+  ingress:
+    enable: true
+    className: nginx
+    host: "ide.timosur.com"
+    wildcardHost: "*.timosur.com"
+    tls:
+      enable: false

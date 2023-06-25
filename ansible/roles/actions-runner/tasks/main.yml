@@ -1,0 +1,50 @@
+---
+- name: Create GitHub Actions Runner namespace
+  kubernetes.core.k8s:
+    api_version: v1
+    kind: Namespace
+    name: gh-actions-runner
+    state: present
+
+- name: Add GitHub Actions Runner chart repo
+  kubernetes.core.helm_repository:
+    name: actions-runner-controller
+    repo_url: https://actions-runner-controller.github.io/actions-runner-controller
+
+- name: Deploy GitHub Actions Runner chart
+  kubernetes.core.helm:
+    name: actions-runner-controller
+    chart_ref: actions-runner-controller/actions-runner-controller
+    release_namespace: gh-actions-runner
+    chart_version: 0.23.3
+    update_repo_cache: true
+    wait: true
+    release_values: "{{ lookup('template', 'values.action-runner.yml.j2') | from_yaml }}"
+
+# Loop over the list of repositories
+# Each repository has a name, repository url and replicas
+# The variable should be define inline
+- name: Create runners
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: actions.summerwind.dev/v1alpha1
+      kind: RunnerDeployment
+      metadata:
+        name: "{{ item.name }}-runner"
+        namespace: gh-actions-runner
+      spec:
+        # This will deploy 2 runners now
+        replicas: 1
+        template:
+          spec:
+            repository: "{{ item.repository }}"
+  with_items: 
+  - name: finance-portolio
+    repository: timosur/finance-portolio
+  - name: portolio
+    repository: timosur/portfolio
+  - name: givgroov
+    repository: timosur/givgroov
+  - name: vinyl-manager
+    repository: timosur/vinyl-manager
