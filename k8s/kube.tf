@@ -337,24 +337,16 @@ module "kube-hetzner" {
 
   # Adding extra firewall rules, like opening a port
   # More info on the format here https://registry.terraform.io/providers/hetznercloud/hcloud/latest/docs/resources/firewall
-  # extra_firewall_rules = [
-  #   {
-  #     description = "For Postgres"
-  #     direction       = "in"
-  #     protocol        = "tcp"
-  #     port            = "5432"
-  #     source_ips      = ["0.0.0.0/0", "::/0"]
-  #     destination_ips = [] # Won't be used for this rule
-  #   },
-  #   {
-  #     description = "To Allow ArgoCD access to resources via SSH"
-  #     direction       = "out"
-  #     protocol        = "tcp"
-  #     port            = "22"
-  #     source_ips      = [] # Won't be used for this rule
-  #     destination_ips = ["0.0.0.0/0", "::/0"]
-  #   }
-  # ]
+  extra_firewall_rules = [
+    {
+      description = "Allow Outbound TCP SMB 445"
+      direction       = "out"
+      protocol        = "tcp"
+      port            = "445"
+      source_ips      = [] # Won't be used for this rule
+      destination_ips = ["0.0.0.0/0", "::/0"]
+    }
+  ]
 
   # If you want to configure a different CNI for k3s, use this flag
   # possible values: flannel (Default), calico, and cilium

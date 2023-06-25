@@ -1,0 +1,102 @@
+---
+- name: Add helm repo
+  kubernetes.core.helm_repository:
+    name: csi-driver-smb
+    repo_url: https://raw.githubusercontent.com/kubernetes-csi/csi-driver-smb/master/charts
+    state: present
+
+- name: Install helm chart
+  kubernetes.core.helm:
+    name: csi-driver-smb
+    chart_ref: csi-driver-smb/csi-driver-smb
+    release_namespace: default
+    update_repo_cache: true
+    wait: true
+
+- name: Create storage-box-creds secret
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: storage-box-creds
+        namespace: default
+      data:
+        username: "{{ storageBox.username | b64encode }}"
+        password: "{{ storageBox.password | b64encode }}"
+
+- name: Create storage box storage class
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: storage.k8s.io/v1
+      kind: StorageClass
+      metadata:
+        name: storage-box-smb
+      provisioner: smb.csi.k8s.io
+      parameters:
+        # On Windows, "*.default.svc.cluster.local" could not be recognized by csi-proxy
+        source: "//u334650.your-storagebox.de/backup"
+        # if csi.storage.k8s.io/provisioner-secret is provided, will create a sub directory
+        # with PV name under source
+        csi.storage.k8s.io/provisioner-secret-name: "storage-box-creds"
+        csi.storage.k8s.io/provisioner-secret-namespace: "default"
+        csi.storage.k8s.io/node-stage-secret-name: "storage-box-creds"
+        csi.storage.k8s.io/node-stage-secret-namespace: "default"
+      volumeBindingMode: Immediate
+      mountOptions:
+        - dir_mode=0777
+        - file_mode=0777
+        - uid=1001
+        - gid=1001
+
+# - name: Create test pvc
+#   kubernetes.core.k8s:
+#     state: present
+#     definition:
+#       apiVersion: v1
+#       kind: PersistentVolumeClaim
+#       metadata:
+#         name: storage-box-pvc
+#         namespace: default
+#       spec:
+#         accessModes:
+#           - ReadWriteMany
+#         storageClassName: storage-box-smb
+#         resources:
+#           requests:
+#             storage: 1000Gi
+
+# - name: Create test deployment using pvc
+#   kubernetes.core.k8s:
+#     state: present
+#     definition:
+#       apiVersion: apps/v1
+#       kind: Deployment
+#       metadata:
+#         name: storage-box
+#         namespace: default
+#       spec:
+#         replicas: 1
+#         selector:
+#           matchLabels:
+#             app: storage-box
+#         template:
+#           metadata:
+#             labels:
+#               app: storage-box
+#           spec:
+#             containers:
+#               - name: storage-box
+#                 image: nginxdemos/hello:latest
+#                 imagePullPolicy: Always
+#                 ports:
+#                   - containerPort: 80
+#                 volumeMounts:
+#                   - name: storage-box-pvc
+#                     mountPath: /data
+#             volumes:
+#               - name: storage-box-pvc
+#                 persistentVolumeClaim:
+#                   claimName: storage-box-pvc

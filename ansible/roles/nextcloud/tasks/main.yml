@@ -1,0 +1,38 @@
+---
+- name: Create nextcloud namespace
+  kubernetes.core.k8s:
+    state: present
+    api_version: v1
+    kind: Namespace
+    name: nextcloud
+
+- name: Create nextcloud k8s secret
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: nextcloud-secrets
+        namespace: nextcloud
+      type: Opaque
+      data:
+        username: "{{ nextcloud.username | b64encode }}"
+        password: "{{ nextcloud.password | b64encode }}"
+        db_username: "{{ nextcloud.db.username | b64encode }}"
+        db_password: "{{ nextcloud.db.password | b64encode }}"
+
+- name: Add helm repo
+  kubernetes.core.helm_repository:
+    name: nextcloud
+    repo_url: https://nextcloud.github.io/helm/
+    state: present
+
+- name: Install helm chart
+  kubernetes.core.helm:
+    name: nextcloud
+    chart_ref: nextcloud/nextcloud
+    release_namespace: nextcloud
+    update_repo_cache: true
+    wait: true
+    release_values: "{{ lookup('template', 'values.nextcloud.yml.j2') | from_yaml }}"

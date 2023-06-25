@@ -40,6 +40,8 @@
   loop: 
     - name: coder
       password: "{{ coder.db.password }}"
+    - name: "{{ nextcloud.db.username }}"
+      password: "{{ nextcloud.db.password }}"
 
 - name: Create databases
   community.postgresql.postgresql_db:
@@ -51,3 +53,5 @@
   loop: 
     - name: coder
       owner: coder
+    - name: "{{ nextcloud.db.name }}"
+      owner: "{{ nextcloud.db.username }}"

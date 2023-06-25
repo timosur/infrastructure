@@ -1,6 +1,8 @@
 - name: Configure k8s cluster
   hosts: localhost
   roles:
-    # - role: postgresql
+    - role: postgresql
     # - role: coder
-    - role: actions-runner
+    # - role: actions-runner
+    # - role: storage-box
+    - role: nextcloud
