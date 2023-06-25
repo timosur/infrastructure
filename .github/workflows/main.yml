@@ -1,0 +1,50 @@
+# Workflow for running terraform and ansible
+# on a github hosted agent
+
+name: Build and deploy
+
+# Controls when the workflow will run
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: ./k8s
+
+      - name: Terraform Plan
+        run: terraform plan
+        working-directory: ./k8s
+
+      # Ask for confirmation before applying
+      - name: Terraform Apply
+        run: terraform apply
+        working-directory: ./k8s
+
+      - name: Install Ansible
+        run: |
+          sudo apt update
+          sudo apt install software-properties-common
+          sudo apt-add-repository --yes --update ppa:ansible/ansible
+          sudo apt install ansible
+
+      - name: Get secret file named ansible-vault.pass
+        run: |
+          echo ${{ secrets.ANSIBLE_VAULT_PASS }} > ansible-vault.pass
+          chmod 600 ansible-vault.pass
+
+      - name: Ansible Playbook
+        run: ansible-playbook configure.yml --vault-password-file=ansible-vault.pass  -e 'ansible_python_interpreter=/usr/bin/python3'
+        working-directory: ./ansible
