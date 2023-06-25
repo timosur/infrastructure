@@ -38,26 +38,11 @@ ingress:
 ## Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#container-probes
 ##
 livenessProbe:
-  enabled: true
-  initialDelaySeconds: 300
-  periodSeconds: 10
-  timeoutSeconds: 5
-  failureThreshold: 10000
-  successThreshold: 1
+  enabled: false
 readinessProbe:
-  enabled: true
-  initialDelaySeconds: 300
-  periodSeconds: 10
-  timeoutSeconds: 5
-  failureThreshold: 10000
-  successThreshold: 1
+  enabled: false
 startupProbe:
   enabled: false
-  initialDelaySeconds: 180
-  periodSeconds: 10
-  timeoutSeconds: 5
-  failureThreshold: 1000
-  successThreshold: 1
 
 ##
 ## Configure the service type to be used for Nextcloud
@@ -76,6 +61,18 @@ nextcloud:
 
   mail:
     enabled: false
+
+  configs:
+    custom.config.php: |-
+      <?php
+      $CONFIG = [
+        'check_data_directory_permissions' => false,
+        'trusted_domains' =>
+        [
+          'cloud.timosur.com',
+          '10.255.0.1'
+        ]
+      ];
 
 ##
 ## Internal database configuration

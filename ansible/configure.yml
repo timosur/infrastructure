@@ -2,7 +2,7 @@
   hosts: localhost
   roles:
     - role: postgresql
-    # - role: coder
-    # - role: actions-runner
-    # - role: storage-box
     - role: nextcloud
+    - role: coder
+    - role: actions-runner
+    - role: storage-box
