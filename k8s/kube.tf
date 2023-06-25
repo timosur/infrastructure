@@ -614,3 +614,13 @@ variable "hcloud_token" {
   sensitive = true
   default   = ""
 }
+
+variable "ssh_public_key" {
+  sensitive = true
+  default = ""
+}
+
+variable "ssh_private_key" {
+  sensitive = true
+  default = ""
+}
