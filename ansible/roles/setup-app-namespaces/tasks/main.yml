@@ -1,0 +1,34 @@
+- set_fact:
+    k8s_namespaces:
+    - finance-app
+
+- name: Ensure Namespace exists
+  k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: "{{ item }}"
+  loop: "{{ k8s_namespaces }}"
+
+- name: Create Docker registry secret in specified namespaces
+  k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: registry-timosur-com
+        namespace: "{{ item }}"
+      type: kubernetes.io/dockerconfigjson
+      data:
+        .dockerconfigjson: "{{  dockerconfigjson | to_nice_json | b64encode }}"
+  loop: "{{ k8s_namespaces }}"
+  vars:
+    dockerconfigjson:
+      auths:
+        registry.timosur.com:
+          username: "{{ registry.username }}"
+          password: "{{ registry.password }}"
+          auth: "{{ (registry.username + ':' + registry.password) | b64encode }}"

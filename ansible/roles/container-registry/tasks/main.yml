@@ -1,0 +1,12 @@
+# deploy container registry to k8s cluster
+- name: deploy container registry
+  k8s:
+    state: present
+    definition: "{{ lookup('template', item) }}"
+    namespace: "docker-registry"
+  with_items:
+    - namespace.yml.j2
+    - secret.yml.j2
+    - deployment.yml.j2
+    - service.yml.j2
+    - ingress.yml.j2

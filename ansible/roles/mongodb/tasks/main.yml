@@ -1,0 +1,11 @@
+# deploy mongodb to k8s cluster
+- name: deploy mongodb registry
+  k8s:
+    state: present
+    definition: "{{ lookup('template', item) }}"
+    namespace: "mongodb"
+  with_items:
+    - namespace.yml.j2
+    - secret.yml.j2
+    - deployment.yml.j2
+    - service.yml.j2
