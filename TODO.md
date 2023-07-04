@@ -1,0 +1,9 @@
+- [ ] Setup Github Action for Terraform and Ansible
+    - [ ] Where to store terraform state?
+- [x] Fix finance portfolio
+- [ ] Deploy single landing page for my portfolio again
+- [x] Think of a way how to build docker containers in my infrastructure (maybe via envbox?)
+    -> Via Github agent
+- [ ] Deploy givgroov.de again
+- [ ] Deploy grafana and prometheus instance to monitor my cluster
+- [ ] Look at the update path regarding the cluster
