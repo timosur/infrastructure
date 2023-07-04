@@ -38,9 +38,9 @@ jobs:
           TCLOUD_TOKEN: ${{ secrets.TCLOUD_TOKEN }}
 
       # Ask for confirmation before applying
-      - name: Terraform Apply
-        run: terraform apply
-        working-directory: ./k8s
+      # - name: Terraform Apply
+      #   run: terraform apply
+      #   working-directory: ./k8s
 
       - name: Install Ansible
         run: |

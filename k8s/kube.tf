@@ -1,14 +1,8 @@
-locals {
-  hcloud_token = var.hcloud_token != "" ? var.hcloud_token : ""
-  ssh_public_key = var.ssh_public_key != "" ? var.ssh_public_key : file("~/.ssh/id_ed25519.pub")
-  ssh_private_key = var.ssh_private_key != "" ? var.ssh_private_key : file("~/.ssh/id_ed25519")
-}
-
 module "kube-hetzner" {
   providers = {
     hcloud = hcloud
   }
-  hcloud_token = local.hcloud_token
+  hcloud_token = var.hcloud_token
 
   # Then fill or edit the below values. Only the first values starting with a * are obligatory; the rest can remain with their default values, or you
   # could adapt them to your needs.
@@ -31,10 +25,10 @@ module "kube-hetzner" {
   # ssh_port = 2222
 
   # * Your ssh public key
-  ssh_public_key = local.ssh_public_key
+  ssh_public_key = file(var.ssh_public_key)
   # * Your private key must be "ssh_private_key = null" when you want to use ssh-agent for a Yubikey-like device authentification or an SSH key-pair with a passphrase.
   # For more details on SSH see https://github.com/kube-hetzner/kube-hetzner/blob/master/docs/ssh.md
-  ssh_private_key = local.ssh_private_key
+  ssh_private_key = file(var.ssh_private_key)
   # You can add additional SSH public Keys to grant other team members root access to your cluster nodes.
   # ssh_additional_public_keys = []
 
@@ -592,7 +586,7 @@ bootstrapPassword: "supermario"
 }
 
 provider "hcloud" {
-  token = var.hcloud_token != "" ? var.hcloud_token : local.hcloud_token
+  token = var.hcloud_token
 }
 
 terraform {
