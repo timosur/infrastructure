@@ -27,8 +27,8 @@ jobs:
           echo $SSH_PRIVATE_KEY > ssh_private_key
           chmod 600 ssh_private_key
           echo $SSH_PUBLIC_KEY > ssh_public_key
-          export TF_VAR_ssh_public_key=${{ github.workspace }}/ssh_public_key
-          export TF_VAR_ssh_private_key=${{ github.workspace }}/ssh_private_key
+          export TF_VAR_ssh_public_key=${{ github.workspace }}/k8s/ssh_public_key
+          export TF_VAR_ssh_private_key=${{ github.workspace }}/k8s/ssh_private_key
           env
           pwd
           echo ${{ github.workspace }}
