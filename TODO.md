@@ -1,7 +1,8 @@
 - [ ] Setup Github Action for Terraform and Ansible
     - [ ] Where to store terraform state?
 - [x] Fix finance portfolio
-- [ ] Deploy single landing page for my portfolio again
+- [ ] Deploy single landing page for my portfolio
+    -> Move to Hugo instead of NextJS
 - [x] Think of a way how to build docker containers in my infrastructure (maybe via envbox?)
     -> Via Github agent
 - [ ] Deploy givgroov.de again
