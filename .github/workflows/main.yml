@@ -27,8 +27,8 @@ jobs:
           echo $SSH_PRIVATE_KEY > ssh_private_key
           chmod 600 ssh_private_key
           echo $SSH_PUBLIC_KEY > ssh_public_key
-          export TF_VAR_ssh_public_key=ssh_public_key
-          export TF_VAR_ssh_private_key=ssh_private_key
+          export TF_VAR_ssh_public_key=./ssh_public_key
+          export TF_VAR_ssh_private_key=./ssh_private_key
           terraform init
           terraform plan
         working-directory: ./k8s
