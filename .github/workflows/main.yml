@@ -112,8 +112,10 @@ jobs:
 
       - name: Get secret file named ansible-vault.pass
         run: |
-          echo ${{ secrets.ANSIBLE_VAULT_PASS }} > ansible-vault.pass
+          echo $ANSIBLE_VAULT_PASS > ansible-vault.pass
           chmod 600 ansible-vault.pass
+        env:
+          ANSIBLE_VAULT_PASS: ${{ secrets.ANSIBLE_VAULT_PASS }}
 
       - name: Ansible Playbook
         run: |
