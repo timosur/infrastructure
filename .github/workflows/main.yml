@@ -79,16 +79,11 @@ jobs:
           SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY }}
           TCLOUD_TOKEN: ${{ secrets.TCLOUD_TOKEN }}
 
-      - name: Terraform output kubeconfig
-        run: |
-          terraform output --raw kubeconfig > kubeconfig.yaml
-        working-directory: ./k8s
-
       - name: Publish kubeconfig
         uses: actions/upload-artifact@v2
         with:
-          name: kubeconfig
-          path: ./k8s/kubeconfig.yaml
+          name: k3s_kubeconfig
+          path: ./k8s/k3s_kubeconfig.yaml
 
   ansible:
     needs: terraform_apply
@@ -106,7 +101,7 @@ jobs:
 
       - uses: actions/download-artifact@v2
         with:
-          name: kubeconfig
+          name: k3s_kubeconfig
 
       - name: Install Ansible
         run: |
@@ -122,6 +117,6 @@ jobs:
 
       - name: Ansible Playbook
         run: |
-          export KUBECONFIG=./kubeconfig.yaml
+          export KUBECONFIG=./k3s_kubeconfig.yaml
           ansible-playbook configure.yml --vault-password-file=ansible-vault.pass  -e 'ansible_python_interpreter=/usr/bin/python3'
         working-directory: ./ansible
