@@ -26,7 +26,7 @@ jobs:
 
       - name: Terraform Plan
         run: |
-          echo $SSH_PUBLIC_KEY > ssh_public_key
+          echo $SSH_PUBLIC_KEY | base64 -d > ssh_public_key
           export TF_TOKEN_app_terraform_io=$TCLOUD_TOKEN
           export TF_VAR_hcloud_token=$HCLOUD_TOKEN
           export TF_VAR_ssh_public_key=ssh_public_key
@@ -43,18 +43,18 @@ jobs:
       #   run: terraform apply
       #   working-directory: ./k8s
 
-      - name: Install Ansible
-        run: |
-          sudo apt update
-          sudo apt install software-properties-common
-          sudo apt-add-repository --yes --update ppa:ansible/ansible
-          sudo apt install ansible
+      # - name: Install Ansible
+      #   run: |
+      #     sudo apt update
+      #     sudo apt install software-properties-common
+      #     sudo apt-add-repository --yes --update ppa:ansible/ansible
+      #     sudo apt install ansible
 
-      - name: Get secret file named ansible-vault.pass
-        run: |
-          echo ${{ secrets.ANSIBLE_VAULT_PASS }} > ansible-vault.pass
-          chmod 600 ansible-vault.pass
+      # - name: Get secret file named ansible-vault.pass
+      #   run: |
+      #     echo ${{ secrets.ANSIBLE_VAULT_PASS }} > ansible-vault.pass
+      #     chmod 600 ansible-vault.pass
 
-      - name: Ansible Playbook
-        run: ansible-playbook configure.yml --vault-password-file=ansible-vault.pass  -e 'ansible_python_interpreter=/usr/bin/python3'
-        working-directory: ./ansible
+      # - name: Ansible Playbook
+      #   run: ansible-playbook configure.yml --vault-password-file=ansible-vault.pass  -e 'ansible_python_interpreter=/usr/bin/python3'
+      #   working-directory: ./ansible
