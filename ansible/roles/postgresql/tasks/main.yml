@@ -31,27 +31,28 @@
     chart_version: 12.5.8
     release_values: "{{ lookup('template', 'values.postgres.yml.j2') | from_yaml }}"
 
-- name: Create users
-  community.postgresql.postgresql_user:
-    name: "{{ item.name }}"
-    password: "{{ item.password }}"
-    login_host: "127.0.0.1"
-    login_password: "{{ postgres.password }}"
-  loop: 
-    - name: coder
-      password: "{{ coder.db.password }}"
-    - name: "{{ nextcloud.db.username }}"
-      password: "{{ nextcloud.db.password }}"
+# TODO: How to access the postgres pod?
+# - name: Create users
+#   community.postgresql.postgresql_user:
+#     name: "{{ item.name }}"
+#     password: "{{ item.password }}"
+#     login_host: "127.0.0.1"
+#     login_password: "{{ postgres.password }}"
+#   loop: 
+#     - name: coder
+#       password: "{{ coder.db.password }}"
+#     - name: "{{ nextcloud.db.username }}"
+#       password: "{{ nextcloud.db.password }}"
 
-- name: Create databases
-  community.postgresql.postgresql_db:
-    name: "{{ item.name }}"
-    owner: "{{ item.owner }}"
-    encoding: UTF-8
-    login_host: "127.0.0.1"
-    login_password: "{{ postgres.password }}"
-  loop: 
-    - name: coder
-      owner: coder
-    - name: "{{ nextcloud.db.name }}"
-      owner: "{{ nextcloud.db.username }}"
+# - name: Create databases
+#   community.postgresql.postgresql_db:
+#     name: "{{ item.name }}"
+#     owner: "{{ item.owner }}"
+#     encoding: UTF-8
+#     login_host: "127.0.0.1"
+#     login_password: "{{ postgres.password }}"
+#   loop: 
+#     - name: coder
+#       owner: coder
+#     - name: "{{ nextcloud.db.name }}"
+#       owner: "{{ nextcloud.db.username }}"
