@@ -110,15 +110,12 @@ jobs:
           sudo apt-add-repository --yes --update ppa:ansible/ansible
           sudo apt install ansible
 
-      - name: Get secret file named ansible-vault.pass
+      - name: Ansible Playbook
         run: |
           echo $ANSIBLE_VAULT_PASS > ansible-vault.pass
           chmod 600 ansible-vault.pass
-        env:
-          ANSIBLE_VAULT_PASS: ${{ secrets.ANSIBLE_VAULT_PASS }}
-
-      - name: Ansible Playbook
-        run: |
           export KUBECONFIG=./k3s_kubeconfig.yaml
           ansible-playbook configure.yml --vault-password-file=ansible-vault.pass  -e 'ansible_python_interpreter=/usr/bin/python3'
         working-directory: ./ansible
+        env:
+          ANSIBLE_VAULT_PASS: ${{ secrets.ANSIBLE_VAULT_PASS }}
