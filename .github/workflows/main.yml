@@ -112,8 +112,8 @@ jobs:
 
       - name: Ansible Playbook
         run: |
-          echo $ANSIBLE_VAULT_PASS > ansible-vault.pass
-          chmod 600 ansible-vault.pass
+          echo $ANSIBLE_VAULT_PASS | base64 -d > ansible-vault.pass
+          chmod 644 ansible-vault.pass
           export KUBECONFIG=./k3s_kubeconfig.yaml
           ansible-playbook configure.yml --vault-password-file=ansible-vault.pass  -e 'ansible_python_interpreter=/usr/bin/python3'
         working-directory: ./ansible
