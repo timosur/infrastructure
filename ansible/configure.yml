@@ -2,6 +2,7 @@
   hosts: localhost
   roles:
     - role: postgresql
+    - role: prometheus
     - role: nextcloud
     - role: coder
     - role: actions-runner

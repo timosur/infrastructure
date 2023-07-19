@@ -1,0 +1,80 @@
+commonLabels:
+  prometheus: default
+
+admin:
+  existingSecret: grafana-admin-credentials
+  userKey: user
+  passwordKey: password
+
+defaultRules:
+  rules:
+    etcd: false
+
+prometheus:
+  prometheusSpec:
+    retention: 7d
+    serviceMonitorNamespaceSelector:
+      matchLabels:
+        prometheus: default
+    serviceMonitorSelector:
+      matchLabels:
+        prometheus: default
+    ruleSelector:
+      matchLabels:
+        prometheus: default
+    ruleNamespaceSelector:
+      matchLabels:
+        prometheus: default
+    podMonitorSelector:
+      matchLabels:
+        prometheus: default
+    podMonitorNamespaceSelector:
+      matchLabels:
+        prometheus: default
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: hcloud-volumes
+          resources:
+            requests:
+              storage: 15Gi
+
+alertmanager:
+  enabled: false
+
+kubeEtcd:
+  enabled: false
+
+kubeControllerManager:
+  enabled: false
+
+kubeScheduler:
+  enabled: false
+
+kubeProxy:
+  enabled: false
+
+grafana:
+  ingress:
+    enabled: true
+    hosts:
+      - grafana.timosur.com
+  grafana.ini:
+    server:
+      domain: grafana.timosur.com
+      root_url: "https://%(domain)s"
+  persistence:
+    enabled: false
+    storageClassName: hcloud-volumes
+
+prometheus-node-exporter:
+  prometheus:
+    monitor:
+      additionalLabels:
+        prometheus: default
+
+kube-state-metrics:
+  prometheus:
+    monitor:
+      additionalLabels:
+        prometheus: default

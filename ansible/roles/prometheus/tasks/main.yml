@@ -1,0 +1,51 @@
+---
+- name: Add Prometheus chart repo
+  kubernetes.core.helm_repository:
+    name: prometheus-community
+    repo_url: https://prometheus-community.github.io/helm-charts
+
+- name: Create observability namespace
+  kubernetes.core.k8s:
+    name: observability-system
+    api_version: v1
+    kind: Namespace
+    state: present
+    definition:
+      metadata:
+        labels:
+          prometheus: default
+
+- name: Create Grafana admin credentials secret
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: grafana-admin-credentials
+        namespace: observability-system
+      data:
+        user: "{{ grafana.admin.user | b64encode }}"
+        password: "{{ grafana.admin.password | b64encode }}"
+
+- name: Update Prometheus operator CRDs
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('ansible.builtin.url', item, split_lines=False) | from_yaml }}"
+  loop:
+  - https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.66.0/example/prometheus-operator-crd/monitoring.coreos.com_alertmanagers.yaml
+  - https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.66.0/example/prometheus-operator-crd/monitoring.coreos.com_podmonitors.yaml
+  - https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.66.0/example/prometheus-operator-crd/monitoring.coreos.com_probes.yaml
+  - https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.66.0/example/prometheus-operator-crd/monitoring.coreos.com_prometheuses.yaml
+  - https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.66.0/example/prometheus-operator-crd/monitoring.coreos.com_prometheusrules.yaml
+  - https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.66.0/example/prometheus-operator-crd/monitoring.coreos.com_servicemonitors.yaml
+  - https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.66.0/example/prometheus-operator-crd/monitoring.coreos.com_thanosrulers.yaml
+
+- name: Deploy Prometheus chart
+  kubernetes.core.helm:
+    name: prometheus
+    chart_ref: prometheus-community/kube-prometheus-stack
+    release_namespace: observability-system
+    chart_version: 47.3.0
+    update_repo_cache: true
+    release_values: "{{ lookup('ansible.builtin.template', 'values.yaml.j2') | from_yaml }}"
