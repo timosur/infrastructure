@@ -100,7 +100,7 @@ module "kube-hetzner" {
     # Arm based nodes, currently available only in FSN location
     {
       name        = "agent-arm-small",
-      server_type = "cax11",
+      server_type = "cax21",
       location    = "fsn1",
       labels      = [],
       taints      = [],
