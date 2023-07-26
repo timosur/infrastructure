@@ -1,6 +1,7 @@
 - set_fact:
     k8s_namespaces:
     - finance-app
+    - portfolio
 
 - name: Ensure Namespace exists
   k8s:

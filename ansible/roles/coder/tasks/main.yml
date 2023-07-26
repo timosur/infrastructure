@@ -30,7 +30,7 @@
     name: coder
     chart_ref: coderv2/coder
     release_namespace: coder
-    chart_version: 0.26.1
+    chart_version: 0.27.1
     update_repo_cache: true
     wait: true
     release_values: "{{ lookup('template', 'values.coder.yml.j2') | from_yaml }}"
